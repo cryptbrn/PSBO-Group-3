@@ -1,34 +1,42 @@
-package com.example.psbogroup3.entity;
+package com.example.psbogroup3.web.model.request;
 
 import com.example.psbogroup3.enums.Gender;
 import com.example.psbogroup3.enums.Status;
+import com.example.psbogroup3.validation.StringEnumeration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * @author muhammad.reyhan
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Document("persons")
-public class Person {
-  @Id
-  private String id;
+public class UpdatePersonRequest {
   private String name;
-  private Gender gender;
+
+  @StringEnumeration(message = "Must Gender Enum", enumClass = Gender.class)
+  private String gender;
+
   private String address;
+
   private String email;
+
   private Long birthDate;
+
   private String education;
-  private Status status;
+
+  @StringEnumeration(message = "Must Status Enum", enumClass = Status.class)
+  private String status;
+
   private String photo;
+
   private String religion;
+
   private String nationality;
+
   private String job;
 }
