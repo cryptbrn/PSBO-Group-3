@@ -18,7 +18,7 @@ public class Job {
     private String id;
     private String institution;
     private String position;
-    private long salary;
-    private String joinDate;
+    private double salary;
+    private long joinDate;
 
 }

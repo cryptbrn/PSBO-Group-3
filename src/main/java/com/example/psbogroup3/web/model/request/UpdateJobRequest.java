@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class UpdateJobRequest {
     private String institution;
     private String position;
-    private long salary;
-    private String joinDate;
+    private double salary;
+    private long joinDate;
 
 }

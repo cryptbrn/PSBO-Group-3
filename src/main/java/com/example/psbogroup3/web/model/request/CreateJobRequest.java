@@ -20,8 +20,8 @@ public class CreateJobRequest {
     private String position;
 
     @NotNull
-    private long salary;
+    private double salary;
 
     @NotNull
-    private String joinDate;
+    private long joinDate;
 }
