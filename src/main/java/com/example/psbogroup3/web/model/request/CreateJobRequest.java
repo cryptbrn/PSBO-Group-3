@@ -6,21 +6,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateJobRequest {
-    @NotBlank
+    @NotNull
     private String institution;
 
-    @NotBlank
+    @NotNull
     private String position;
 
-    @NotBlank
-    private double salary;
+    @NotNull
+    private long salary;
 
-    @NotBlank
+    @NotNull
     private String joinDate;
 }

@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JobResponse {
+    private String id;
     private String institution;
     private String position;
-    private double salary;
+    private long salary;
     private String joinDate;
 }
