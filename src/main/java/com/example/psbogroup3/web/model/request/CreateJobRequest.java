@@ -13,15 +13,15 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateJobRequest {
-    @NotNull
+    @NotBlank
     private String institution;
 
-    @NotNull
+    @NotBlank
     private String position;
 
     @NotNull
-    private double salary;
+    private Double salary;
 
     @NotNull
-    private long joinDate;
+    private Long joinDate;
 }

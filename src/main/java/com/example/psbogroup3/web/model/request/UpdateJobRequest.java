@@ -10,9 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateJobRequest {
+
     private String institution;
+
     private String position;
-    private double salary;
-    private long joinDate;
+
+    private Double salary;
+
+    private Long joinDate;
 
 }

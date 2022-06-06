@@ -16,9 +16,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Job {
     @Id
     private String id;
-    private String institution;
-    private String position;
-    private double salary;
-    private long joinDate;
 
+    private String institution;
+
+    private String position;
+
+    private Double salary;
+
+    private Long joinDate;
 }
