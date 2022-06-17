@@ -25,9 +25,9 @@ public class UpdateAddressRequest {
 
     private String province;
 
-    private Double _long;
+    private Double longitude;
 
-    private Double lat;
+    private Double latitude;
 
-    private Double timezone;
+    private UpdateTimezoneRequest updateTimezoneRequest;
 }

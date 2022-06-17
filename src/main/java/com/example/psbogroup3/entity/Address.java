@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -16,7 +17,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Builder
 @Document("address")
-
 public class Address {
     @Id
     private String id;
@@ -33,9 +33,10 @@ public class Address {
 
     private String province;
 
-    private Double _long;
+    private Double longitude;
 
-    private Double lat;
+    private Double latitude;
 
-    private Double timezone;
+    @DBRef
+    private Timezone timezone;
 }

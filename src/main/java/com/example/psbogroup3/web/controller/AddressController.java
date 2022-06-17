@@ -2,12 +2,14 @@ package com.example.psbogroup3.web.controller;
 
 import com.example.psbogroup3.entity.Address;
 import com.example.psbogroup3.helper.ObjectHelper;
+import com.example.psbogroup3.helper.TimezoneHelper;
 import com.example.psbogroup3.repository.AddressRepository;
+import com.example.psbogroup3.repository.TimezoneRepository;
 import com.example.psbogroup3.validation.AddressMustExist;
-import com.example.psbogroup3.web.model.request.UpdateAddressRequest;
-import com.example.psbogroup3.web.model.response.Response;
 import com.example.psbogroup3.web.model.request.CreateAddressRequest;
+import com.example.psbogroup3.web.model.request.UpdateAddressRequest;
 import com.example.psbogroup3.web.model.response.AddressResponse;
+import com.example.psbogroup3.web.model.response.Response;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,75 +34,87 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AddressController {
 
-    @Autowired
-    AddressRepository addressRepository;
+  @Autowired
+  AddressRepository addressRepository;
 
-    @Autowired
-    ObjectHelper objectHelper;
+  @Autowired
+  TimezoneRepository timezoneRepository;
 
-    @GetMapping(value = "/api/address", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<List<AddressResponse>> findAll() {
-        List<Address> addressList = addressRepository.findAll();
-        List<AddressResponse> addressResponseList = addressList.stream().map(this::toResponse).collect(
-                Collectors.toList());
-        return Response.<List<AddressResponse>>builder()
-                .status(true)
-                .data(addressResponseList)
-                .build();
+  @Autowired
+  TimezoneHelper timezoneHelper;
 
-    }
+  @Autowired
+  ObjectHelper objectHelper;
 
-    @GetMapping(value = "/api/address/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<AddressResponse> findById(
-            @AddressMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
-        Address address = addressRepository.findById(id).get();
-        return Response.<AddressResponse>builder()
-                .status(true)
-                .data(toResponse(address))
-                .build();
-    }
+  @GetMapping(value = "/api/address", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Response<List<AddressResponse>> findAll() {
+    List<Address> addressList = addressRepository.findAll();
+    List<AddressResponse> addressResponseList = addressList.stream().map(this::toResponse).collect(
+        Collectors.toList());
+    return Response.<List<AddressResponse>>builder()
+        .status(true)
+        .data(addressResponseList)
+        .build();
 
-    @PostMapping(value = "/api/persons", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<PersonResponse> create(@Validated @RequestBody CreatePersonRequest createPersonRequest) {
-        Person person = personRepository.save(toPerson(createPersonRequest));
-        return Response.<PersonResponse>builder()
-                .status(true)
-                .data(toResponse(person))
-                .build();
-    }
+  }
 
-    @PutMapping(value = "/api/persons/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<AddressResponse> updateById(
-            @Validated @RequestBody UpdateAddressRequest updateAddressRequest,
-            @AddressMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
-        Address address = addressRepository.findById(id).get();
-        objectHelper.copyProperties(updateAddressRequest, address);
-        return Response.<AddressResponse>builder()
-                .status(true)
-                .data(toResponse(addressRepository.save(address)))
-                .build();
-    }
+  @GetMapping(value = "/api/address/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Response<AddressResponse> findById(
+      @AddressMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
+    Address address = addressRepository.findById(id).get();
+    return Response.<AddressResponse>builder()
+        .status(true)
+        .data(toResponse(address))
+        .build();
+  }
 
-    @DeleteMapping(value = "/api/address/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<String> deleteById(
-            @AddressMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
-        addressRepository.deleteById(id);
-        return Response.<String>builder()
-                .status(true)
-                .data("Success Delete Address")
-                .build();
-    }
+  @PostMapping(value = "/api/address", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public Response<AddressResponse> create(
+      @Validated @RequestBody CreateAddressRequest createAddressRequest) {
+    Address address = addressRepository.save(toAddress(createAddressRequest));
+    return Response.<AddressResponse>builder()
+        .status(true)
+        .data(toResponse(address))
+        .build();
+  }
 
-    private AddressResponse toResponse(Address address) {
-        AddressResponse addressResponse = AddressResponse.builder().build();
-        BeanUtils.copyProperties(address, addressResponse);
-        return addressResponse;
-    }
+  @PutMapping(value = "/api/address/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public Response<AddressResponse> updateById(
+      @Validated @RequestBody UpdateAddressRequest updateAddressRequest,
+      @AddressMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
+    Address address = addressRepository.findById(id).get();
+    objectHelper.copyProperties(updateAddressRequest, address);
+    address.setTimezone(timezoneRepository.save(timezoneHelper.updateTimezone(address.getTimezone(),
+        updateAddressRequest.getUpdateTimezoneRequest())));
+    return Response.<AddressResponse>builder()
+        .status(true)
+        .data(toResponse(addressRepository.save(address)))
+        .build();
+  }
 
-    private Address toAddress(CreateAddressRequest createAddressRequest) {
-        Address address = Address.builder().build();
-        BeanUtils.copyProperties(createAddressRequest, address);
-        return address;
-    }
+  @DeleteMapping(value = "/api/address/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Response<String> deleteById(
+      @AddressMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
+    addressRepository.deleteById(id);
+    return Response.<String>builder()
+        .status(true)
+        .data("Success Delete Address")
+        .build();
+  }
+
+  private AddressResponse toResponse(Address address) {
+    AddressResponse addressResponse = AddressResponse.builder().build();
+    BeanUtils.copyProperties(address, addressResponse);
+    addressResponse.setTimezone(timezoneHelper.toResponse(address.getTimezone()));
+    return addressResponse;
+  }
+
+  private Address toAddress(CreateAddressRequest createAddressRequest) {
+    Address address = Address.builder().build();
+    BeanUtils.copyProperties(createAddressRequest, address);
+    address.setTimezone(timezoneRepository.save(
+        timezoneHelper.toTimezone(createAddressRequest.getTimezoneRequest())));
+    return address;
+  }
 
 }

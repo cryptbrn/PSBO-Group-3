@@ -3,6 +3,7 @@ package com.example.psbogroup3.validation.validator;
 import com.example.psbogroup3.helper.TimezoneHelper;
 import com.example.psbogroup3.repository.TimezoneRepository;
 import com.example.psbogroup3.validation.TimezoneMustExist;
+import com.example.psbogroup3.validation.TimezoneMustValid;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.util.StringUtils;
  * @author muhammad.reyhan
  */
 public class TimezoneMustValidValidator implements
-    ConstraintValidator<TimezoneMustExist, String> {
+    ConstraintValidator<TimezoneMustValid, String> {
 
   @Autowired
   private TimezoneHelper timezoneHelper;

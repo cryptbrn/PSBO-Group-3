@@ -20,7 +20,7 @@ public class AddressResponse {
     private String district;
     private String city;
     private String province;
-    private Double _long;
-    private Double lat;
-    private Double timezone;
+    private Double longitude;
+    private Double latitude;
+    private TimezoneResponse timezone;
 }
