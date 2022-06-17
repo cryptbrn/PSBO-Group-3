@@ -1,5 +1,6 @@
 package com.example.psbogroup3.web.model.request;
 
+import com.example.psbogroup3.validation.TimezoneMustExist;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,4 +31,7 @@ public class UpdateAddressRequest {
     private Double latitude;
 
     private UpdateTimezoneRequest updateTimezoneRequest;
+
+    @TimezoneMustExist(message = "Must Exist", path = "timeZoneId")
+    private String timeZoneId;
 }

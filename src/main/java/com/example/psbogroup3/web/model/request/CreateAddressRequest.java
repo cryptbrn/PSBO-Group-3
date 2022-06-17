@@ -1,5 +1,6 @@
 package com.example.psbogroup3.web.model.request;
 
+import com.example.psbogroup3.validation.TimezoneMustExist;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -39,8 +40,11 @@ public class CreateAddressRequest {
 
     @NotNull
     private Double latitude;
-
-    @NotNull
+    
     @Valid
     private CreateTimezoneRequest timezoneRequest;
+    
+    @TimezoneMustExist(message = "Must Exist", path = "timezoneId")
+    private String timeZoneId;
+    
 }
