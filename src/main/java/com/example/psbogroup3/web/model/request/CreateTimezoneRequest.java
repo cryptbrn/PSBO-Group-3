@@ -1,5 +1,6 @@
 package com.example.psbogroup3.web.model.request;
 
+import com.example.psbogroup3.validation.TimezoneMustValid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateTimezoneRequest {
-    @NotNull
-    //@StringEnumeration(message = "Must Location Enum", enumClass = Location.class)
+    @NotBlank
+    @TimezoneMustValid(message = "Must Valid Location", path = "location")
     private String location;
 }
