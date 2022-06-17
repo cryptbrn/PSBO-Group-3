@@ -1,7 +1,6 @@
 package com.example.psbogroup3.web.model.request;
 
-import javax.management.loading.PrivateClassLoader;
-import javax.validation.constraints.Min;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -35,12 +34,13 @@ public class CreateAddressRequest {
     @NotBlank
     private String province;
 
-    @NotBlank
-    private Double _long;
+    @NotNull
+    private Double longitude;
 
-    @NotBlank
-    private Double lat;
+    @NotNull
+    private Double latitude;
 
-    @NotBlank
-    private Double timezone;
+    @NotNull
+    @Valid
+    private CreateTimezoneRequest timezoneRequest;
 }

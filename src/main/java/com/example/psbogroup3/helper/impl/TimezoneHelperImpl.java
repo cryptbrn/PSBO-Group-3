@@ -1,10 +1,15 @@
 package com.example.psbogroup3.helper.impl;
 
+import com.example.psbogroup3.entity.Timezone;
 import com.example.psbogroup3.helper.TimezoneHelper;
+import com.example.psbogroup3.web.model.request.CreateTimezoneRequest;
+import com.example.psbogroup3.web.model.request.UpdateTimezoneRequest;
+import com.example.psbogroup3.web.model.response.TimezoneResponse;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,4 +31,29 @@ public class TimezoneHelperImpl implements TimezoneHelper {
         Math.abs((offsetInMillis / 60000) % 60));
     return "GMT" + (offsetInMillis >= 0 ? "+" : "-") + offset;
   }
+
+  @Override
+  public Timezone toTimezone(CreateTimezoneRequest createTimezoneRequest) {
+    Timezone timezone = Timezone.builder().build();
+    BeanUtils.copyProperties(createTimezoneRequest, timezone);
+    timezone.setOffset(generateOffset(createTimezoneRequest.getLocation()));
+    return timezone;
+  }
+
+  @Override
+  public TimezoneResponse toResponse(Timezone timezone) {
+    TimezoneResponse timezoneResponse = TimezoneResponse.builder().build();
+    BeanUtils.copyProperties(timezone, timezoneResponse);
+    return timezoneResponse;
+  }
+
+  @Override
+  public Timezone updateTimezone(Timezone timezone, UpdateTimezoneRequest updateTimezoneRequest) {
+    if(updateTimezoneRequest.getLocation() != null){
+      timezone.setLocation(updateTimezoneRequest.getLocation());
+      timezone.setOffset(generateOffset(updateTimezoneRequest.getLocation()));
+    }
+    return timezone;
+  }
+
 }
