@@ -32,104 +32,75 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PersonController {
 
-  @Autowired
-  PersonRepository personRepository;
+    @Autowired
+    PersonRepository personRepository;
 
-  @Autowired
-  ObjectHelper objectHelper;
+    @Autowired
+    ObjectHelper objectHelper;
 
+    @GetMapping(value = "/api/persons", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response<List<PersonResponse>> findAll() {
+        List<Person> personList = personRepository.findAll();
+        List<PersonResponse> personResponseList = personList.stream().map(this::toResponse).collect(
+                Collectors.toList());
+        return Response.<List<PersonResponse>>builder()
+                .status(true)
+                .data(personResponseList)
+                .build();
 
-  @GetMapping(
-      value = "/api/persons",
-      produces = MediaType.APPLICATION_JSON_VALUE
-  )
-  public Response<List<PersonResponse>> findAll(){
-    List<Person> personList = personRepository.findAll();
-    List<PersonResponse> personResponseList = personList.stream().map(this::toResponse).collect(
-        Collectors.toList());
-    return Response.<List<PersonResponse>>builder()
-        .status(true)
-        .data(personResponseList)
-        .build();
+    }
 
-  }
+    @GetMapping(value = "/api/persons/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response<PersonResponse> findById(
+            @PersonMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
+        Person person = personRepository.findById(id).get();
+        return Response.<PersonResponse>builder()
+                .status(true)
+                .data(toResponse(person))
+                .build();
+    }
 
-  @GetMapping(
-      value = "/api/persons/{id}",
-      produces = MediaType.APPLICATION_JSON_VALUE
-  )
-  public Response<PersonResponse> findById(
-      @PersonMustExist(message = "Must Exist", path = "id")
-      @PathVariable
-      String id
-  ){
-    Person person = personRepository.findById(id).get();
-    return Response.<PersonResponse>builder()
-        .status(true)
-        .data(toResponse(person))
-        .build();
-  }
+    @PostMapping(value = "/api/persons", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response<PersonResponse> create(@Validated @RequestBody CreatePersonRequest createPersonRequest) {
+        Person person = personRepository.save(toPerson(createPersonRequest));
+        return Response.<PersonResponse>builder()
+                .status(true)
+                .data(toResponse(person))
+                .build();
+    }
 
-  @PostMapping(
-      value = "/api/persons",
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE
-  )
-  public Response<PersonResponse> create(@Validated @RequestBody CreatePersonRequest createPersonRequest){
-    Person person = personRepository.save(toPerson(createPersonRequest));
-    return Response.<PersonResponse>builder()
-        .status(true)
-        .data(toResponse(person))
-        .build();
-  }
+    @PutMapping(value = "/api/persons/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response<PersonResponse> updateById(
+            @Validated @RequestBody UpdatePersonRequest updatePersonRequest,
+            @PersonMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
+        Person person = personRepository.findById(id).get();
+        objectHelper.copyProperties(updatePersonRequest, person);
+        return Response.<PersonResponse>builder()
+                .status(true)
+                .data(toResponse(personRepository.save(person)))
+                .build();
+    }
 
-  @PutMapping(
-      value = "/api/persons/{id}",
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE
-  )
-  public Response<PersonResponse> updateById(
-      @Validated
-      @RequestBody
-      UpdatePersonRequest updatePersonRequest,
-      @PersonMustExist(message = "Must Exist", path = "id")
-      @PathVariable
-      String id
-  ){
-    Person person = personRepository.findById(id).get();
-    objectHelper.copyProperties(updatePersonRequest, person);
-    return Response.<PersonResponse>builder()
-        .status(true)
-        .data(toResponse(personRepository.save(person)))
-        .build();
-  }
+    @DeleteMapping(value = "/api/persons/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response<String> deleteById(
+            @PersonMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
+        personRepository.deleteById(id);
+        return Response.<String>builder()
+                .status(true)
+                .data("Success Delete Person")
+                .build();
+    }
 
-  @DeleteMapping(
-      value = "/api/persons/{id}",
-      produces = MediaType.APPLICATION_JSON_VALUE
-  )
-  public Response<String> deleteById(
-      @PersonMustExist(message = "Must Exist", path = "id")
-      @PathVariable
-      String id
-  ){
-    personRepository.deleteById(id);
-    return Response.<String>builder()
-        .status(true)
-        .data("Success Delete Person")
-        .build();
-  }
+    private PersonResponse toResponse(Person person) {
+        PersonResponse personResponse = PersonResponse.builder().build();
+        BeanUtils.copyProperties(person, personResponse);
+        return personResponse;
+    }
 
-  private PersonResponse toResponse(Person person){
-    PersonResponse personResponse = PersonResponse.builder().build();
-    BeanUtils.copyProperties(person, personResponse);
-    return personResponse;
-  }
-
-  private Person toPerson(CreatePersonRequest createPersonRequest){
-    Person person = Person.builder().build();
-    BeanUtils.copyProperties(createPersonRequest, person);
-    return person;
-  }
+    private Person toPerson(CreatePersonRequest createPersonRequest) {
+        Person person = Person.builder().build();
+        BeanUtils.copyProperties(createPersonRequest, person);
+        return person;
+    }
 
 }
