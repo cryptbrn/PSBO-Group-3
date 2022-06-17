@@ -1,7 +1,13 @@
 package com.example.psbogroup3.web.controller;
 
 import com.example.psbogroup3.entity.Person;
+import com.example.psbogroup3.helper.AddressHelper;
+import com.example.psbogroup3.helper.EducationHelper;
+import com.example.psbogroup3.helper.JobHelper;
 import com.example.psbogroup3.helper.ObjectHelper;
+import com.example.psbogroup3.repository.AddressRepository;
+import com.example.psbogroup3.repository.EducationRepository;
+import com.example.psbogroup3.repository.JobRepository;
 import com.example.psbogroup3.repository.PersonRepository;
 import com.example.psbogroup3.validation.PersonMustExist;
 import com.example.psbogroup3.web.model.request.UpdatePersonRequest;
@@ -34,6 +40,24 @@ public class PersonController {
 
     @Autowired
     PersonRepository personRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
+
+    @Autowired
+    EducationRepository educationRepository;
+
+    @Autowired
+    JobRepository jobRepository;
+
+    @Autowired
+    AddressHelper addressHelper;
+
+    @Autowired
+    EducationHelper educationHelper;
+
+    @Autowired
+    JobHelper jobHelper;
 
     @Autowired
     ObjectHelper objectHelper;
@@ -94,13 +118,43 @@ public class PersonController {
     private PersonResponse toResponse(Person person) {
         PersonResponse personResponse = PersonResponse.builder().build();
         BeanUtils.copyProperties(person, personResponse);
+        personResponse.setAddress(addressHelper.toResponse(person.getAddress()));
+        personResponse.setEducation(educationHelper.toResponse(person.getEducation()));
+        personResponse.setJob(jobHelper.toResponse(person.getJob()));
         return personResponse;
     }
 
     private Person toPerson(CreatePersonRequest createPersonRequest) {
         Person person = Person.builder().build();
         BeanUtils.copyProperties(createPersonRequest, person);
+        setAddress(person, createPersonRequest);
+        setEducation(person, createPersonRequest);
+        setJob(person, createPersonRequest);
         return person;
+    }
+
+    private void setAddress(Person person, CreatePersonRequest createPersonRequest){
+        if(createPersonRequest.getAddressId() != null){
+            person.setAddress(addressRepository.findById(createPersonRequest.getAddressId()).get());
+        }else {
+            addressHelper.toAddress(createPersonRequest.getAddress());
+        }
+    }
+
+    private void setEducation(Person person, CreatePersonRequest createPersonRequest){
+        if(createPersonRequest.getEducationId() != null){
+            person.setEducation(educationRepository.findById(createPersonRequest.getEducationId()).get());
+        }else {
+            educationHelper.toEducation(createPersonRequest.getEducation());
+        }
+    }
+
+    private void setJob(Person person, CreatePersonRequest createPersonRequest){
+        if(createPersonRequest.getJobId() != null){
+            person.setJob(jobRepository.findById(createPersonRequest.getJobId()).get());
+        }else {
+            jobHelper.toJob(createPersonRequest.getJob());
+        }
     }
 
 }

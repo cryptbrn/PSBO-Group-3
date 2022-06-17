@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -20,15 +21,30 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Person {
   @Id
   private String id;
+
   private String name;
+
   private Gender gender;
-  private String address;
+
+  @DBRef
+  private Address address;
+
   private String email;
+
   private Long birthDate;
-  private String education;
+
+  @DBRef
+  private Education education;
+
   private Status status;
+
   private String photo;
+
   private String religion;
+
   private String nationality;
-  private String job;
+
+  @DBRef
+  private Job job;
+
 }
