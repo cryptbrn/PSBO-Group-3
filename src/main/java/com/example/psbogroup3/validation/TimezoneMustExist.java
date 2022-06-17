@@ -1,15 +1,14 @@
 package com.example.psbogroup3.validation;
 
-import com.example.psbogroup3.validation.validator.TimezoneMustExistValidator;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
+import com.example.psbogroup3.validation.validator.TimezoneMustExistValidator;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
 
 /**

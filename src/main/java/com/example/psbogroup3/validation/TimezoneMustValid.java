@@ -2,7 +2,6 @@ package com.example.psbogroup3.validation;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import com.example.psbogroup3.validation.validator.TimezoneMustExistValidator;
 import com.example.psbogroup3.validation.validator.TimezoneMustValidValidator;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

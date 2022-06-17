@@ -1,10 +1,8 @@
 package com.example.psbogroup3.web.model.request;
 
-import com.example.psbogroup3.enums.Level;
 import com.example.psbogroup3.enums.FinalScoreType;
-import com.example.psbogroup3.enums.Status;
+import com.example.psbogroup3.enums.Level;
 import com.example.psbogroup3.validation.StringEnumeration;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

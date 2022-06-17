@@ -38,8 +38,6 @@ public class Person {
 
   private Status status;
 
-  private String photo;
-
   private String religion;
 
   private String nationality;

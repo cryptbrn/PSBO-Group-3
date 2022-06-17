@@ -7,7 +7,6 @@ import com.example.psbogroup3.validation.EducationMustExist;
 import com.example.psbogroup3.validation.JobMustExist;
 import com.example.psbogroup3.validation.StringEnumeration;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

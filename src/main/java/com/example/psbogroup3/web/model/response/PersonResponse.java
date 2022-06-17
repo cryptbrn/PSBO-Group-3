@@ -1,6 +1,5 @@
 package com.example.psbogroup3.web.model.response;
 
-import com.example.psbogroup3.entity.Education;
 import com.example.psbogroup3.enums.Gender;
 import com.example.psbogroup3.enums.Status;
 import lombok.AllArgsConstructor;
