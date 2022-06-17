@@ -61,11 +61,11 @@ public class AddressController {
     }
 
     @PostMapping(value = "/api/persons", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<PersonResponse> create(@Validated @RequestBody CreatePersonRequest createPersonRequest) {
-        Person person = personRepository.save(toPerson(createPersonRequest));
-        return Response.<PersonResponse>builder()
+    public Response<AddressResponse> create(@Validated @RequestBody CreateAddressRequest createAddressRequest) {
+        Address address = addressRepository.save(toAddress(createAddressRequest));
+        return Response.<AddressResponse>builder()
                 .status(true)
-                .data(toResponse(person))
+                .data(toResponse(address))
                 .build();
     }
 

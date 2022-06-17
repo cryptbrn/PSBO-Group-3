@@ -16,7 +16,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Builder
 @Document("address")
-
 public class Address {
     @Id
     private String id;
@@ -33,9 +32,9 @@ public class Address {
 
     private String province;
 
-    private Double _long;
+    private Double longitude;
 
-    private Double lat;
+    private Double latitude;
 
     private Double timezone;
 }
