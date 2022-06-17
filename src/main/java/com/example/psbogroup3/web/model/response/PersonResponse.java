@@ -31,8 +31,6 @@ public class PersonResponse {
 
   private Status status;
 
-  private String photo;
-
   private String religion;
 
   private String nationality;

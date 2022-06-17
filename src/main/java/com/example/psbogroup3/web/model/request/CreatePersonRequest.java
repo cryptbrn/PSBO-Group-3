@@ -46,9 +46,6 @@ public class CreatePersonRequest {
   private String status;
 
   @NotBlank
-  private String photo;
-
-  @NotBlank
   private String religion;
 
   @NotBlank

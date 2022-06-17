@@ -35,8 +35,6 @@ public class UpdatePersonRequest {
   @StringEnumeration(message = "Must Status Enum", enumClass = Status.class)
   private String status;
 
-  private String photo;
-
   private String religion;
 
   private String nationality;
