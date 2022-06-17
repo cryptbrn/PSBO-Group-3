@@ -1,5 +1,6 @@
 package com.example.psbogroup3.web.model.response;
 
+import com.example.psbogroup3.entity.Education;
 import com.example.psbogroup3.enums.Gender;
 import com.example.psbogroup3.enums.Status;
 import lombok.AllArgsConstructor;
@@ -16,15 +17,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PersonResponse {
   private String id;
+
   private String name;
+
   private Gender gender;
-  private String address;
+
+  private AddressResponse address;
+
   private String email;
+
   private Long birthDate;
-  private String education;
+
+  private EducationResponse education;
+
   private Status status;
+
   private String photo;
+
   private String religion;
+
   private String nationality;
-  private String job;
+
+  private JobResponse job;
 }

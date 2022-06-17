@@ -2,7 +2,11 @@ package com.example.psbogroup3.web.model.request;
 
 import com.example.psbogroup3.enums.Gender;
 import com.example.psbogroup3.enums.Status;
+import com.example.psbogroup3.validation.AddressMustExist;
+import com.example.psbogroup3.validation.EducationMustExist;
+import com.example.psbogroup3.validation.JobMustExist;
 import com.example.psbogroup3.validation.StringEnumeration;
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -26,8 +30,8 @@ public class CreatePersonRequest {
   @StringEnumeration(message = "Must Gender Enum", enumClass = Gender.class)
   private String gender;
 
-  @NotBlank
-  private String address;
+  @Valid
+  private CreateAddressRequest address;
 
   @NotBlank
   private String email;
@@ -35,8 +39,8 @@ public class CreatePersonRequest {
   @NotNull
   private Long birthDate;
 
-  @NotBlank
-  private String education;
+  @Valid
+  private CreateEducationRequest education;
 
   @NotNull
   @StringEnumeration(message = "Must Status Enum", enumClass = Status.class)
@@ -51,6 +55,15 @@ public class CreatePersonRequest {
   @NotBlank
   private String nationality;
 
-  @NotBlank
-  private String job;
+  @Valid
+  private CreateJobRequest job;
+
+  @AddressMustExist(message = "Must Exist", path = "addressId")
+  private String addressId;
+
+  @EducationMustExist(message = "Must Exist", path = "educationId")
+  private String educationId;
+
+  @JobMustExist(message = "Must Exist", path = "jobId")
+  private String jobId;
 }

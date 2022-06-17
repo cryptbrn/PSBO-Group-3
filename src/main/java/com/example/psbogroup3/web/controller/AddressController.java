@@ -1,10 +1,9 @@
 package com.example.psbogroup3.web.controller;
 
 import com.example.psbogroup3.entity.Address;
+import com.example.psbogroup3.helper.AddressHelper;
 import com.example.psbogroup3.helper.ObjectHelper;
-import com.example.psbogroup3.helper.TimezoneHelper;
 import com.example.psbogroup3.repository.AddressRepository;
-import com.example.psbogroup3.repository.TimezoneRepository;
 import com.example.psbogroup3.validation.AddressMustExist;
 import com.example.psbogroup3.web.model.request.CreateAddressRequest;
 import com.example.psbogroup3.web.model.request.UpdateAddressRequest;
@@ -13,7 +12,6 @@ import com.example.psbogroup3.web.model.response.Response;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -38,10 +36,7 @@ public class AddressController {
   AddressRepository addressRepository;
 
   @Autowired
-  TimezoneRepository timezoneRepository;
-
-  @Autowired
-  TimezoneHelper timezoneHelper;
+  AddressHelper addressHelper;
 
   @Autowired
   ObjectHelper objectHelper;
@@ -49,8 +44,9 @@ public class AddressController {
   @GetMapping(value = "/api/address", produces = MediaType.APPLICATION_JSON_VALUE)
   public Response<List<AddressResponse>> findAll() {
     List<Address> addressList = addressRepository.findAll();
-    List<AddressResponse> addressResponseList = addressList.stream().map(this::toResponse).collect(
-        Collectors.toList());
+    List<AddressResponse> addressResponseList = addressList.stream()
+        .map(address -> addressHelper.toResponse(address)).collect(
+            Collectors.toList());
     return Response.<List<AddressResponse>>builder()
         .status(true)
         .data(addressResponseList)
@@ -64,17 +60,17 @@ public class AddressController {
     Address address = addressRepository.findById(id).get();
     return Response.<AddressResponse>builder()
         .status(true)
-        .data(toResponse(address))
+        .data(addressHelper.toResponse(address))
         .build();
   }
 
   @PostMapping(value = "/api/address", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public Response<AddressResponse> create(
       @Validated @RequestBody CreateAddressRequest createAddressRequest) {
-    Address address = addressRepository.save(toAddress(createAddressRequest));
+    Address address = addressRepository.save(addressHelper.toAddress(createAddressRequest));
     return Response.<AddressResponse>builder()
         .status(true)
-        .data(toResponse(address))
+        .data(addressHelper.toResponse(address))
         .build();
   }
 
@@ -84,15 +80,10 @@ public class AddressController {
       @AddressMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
     Address address = addressRepository.findById(id).get();
     objectHelper.copyProperties(updateAddressRequest, address);
-    if(updateAddressRequest.getTimeZoneId()!=null){
-      address.setTimezone(timezoneRepository.findById(updateAddressRequest.getTimeZoneId()).get());
-    } else {
-      address.setTimezone(timezoneRepository.save(timezoneHelper.updateTimezone(address.getTimezone(),
-          updateAddressRequest.getUpdateTimezoneRequest())));
-    }
     return Response.<AddressResponse>builder()
         .status(true)
-        .data(toResponse(addressRepository.save(address)))
+        .data(addressHelper.toResponse(
+            addressRepository.save(addressHelper.updateAddress(address, updateAddressRequest))))
         .build();
   }
 
@@ -104,25 +95,6 @@ public class AddressController {
         .status(true)
         .data("Success Delete Address")
         .build();
-  }
-
-  private AddressResponse toResponse(Address address) {
-    AddressResponse addressResponse = AddressResponse.builder().build();
-    BeanUtils.copyProperties(address, addressResponse);
-    addressResponse.setTimezone(timezoneHelper.toResponse(address.getTimezone()));
-    return addressResponse;
-  }
-
-  private Address toAddress(CreateAddressRequest createAddressRequest) {
-    Address address = Address.builder().build();
-    BeanUtils.copyProperties(createAddressRequest, address);
-    if(createAddressRequest.getTimeZoneId() != null){
-      address.setTimezone(timezoneRepository.findById(createAddressRequest.getTimeZoneId()).get());
-    } else {
-      address.setTimezone(timezoneRepository.save(
-          timezoneHelper.toTimezone(createAddressRequest.getTimezoneRequest())));
-    }
-    return address;
   }
 
 }

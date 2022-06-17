@@ -1,18 +1,17 @@
 package com.example.psbogroup3.web.controller;
 
 import com.example.psbogroup3.entity.Education;
-import com.example.psbogroup3.enums.FinalScoreType;
+import com.example.psbogroup3.helper.EducationHelper;
 import com.example.psbogroup3.helper.ObjectHelper;
 import com.example.psbogroup3.repository.EducationRepository;
 import com.example.psbogroup3.validation.EducationMustExist;
-import com.example.psbogroup3.web.model.request.UpdateEducationRequest;
-import com.example.psbogroup3.web.model.response.Response;
 import com.example.psbogroup3.web.model.request.CreateEducationRequest;
+import com.example.psbogroup3.web.model.request.UpdateEducationRequest;
 import com.example.psbogroup3.web.model.response.EducationResponse;
+import com.example.psbogroup3.web.model.response.Response;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +36,9 @@ public class EducationController {
   EducationRepository educationRepository;
 
   @Autowired
+  EducationHelper educationHelper;
+
+  @Autowired
   ObjectHelper objectHelper;
 
 
@@ -44,10 +46,11 @@ public class EducationController {
       value = "/api/educations",
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public Response<List<EducationResponse>> findAll(){
+  public Response<List<EducationResponse>> findAll() {
     List<Education> educationList = educationRepository.findAll();
-    List<EducationResponse> educationResponseList = educationList.stream().map(this::toResponse).collect(
-        Collectors.toList());
+    List<EducationResponse> educationResponseList = educationList.stream()
+        .map(education -> educationHelper.toResponse(education)).collect(
+            Collectors.toList());
     return Response.<List<EducationResponse>>builder()
         .status(true)
         .data(educationResponseList)
@@ -63,11 +66,11 @@ public class EducationController {
       @EducationMustExist(message = "Must Exist", path = "id")
       @PathVariable
       String id
-  ){
+  ) {
     Education education = educationRepository.findById(id).get();
     return Response.<EducationResponse>builder()
         .status(true)
-        .data(toResponse(education))
+        .data(educationHelper.toResponse(education))
         .build();
   }
 
@@ -76,11 +79,12 @@ public class EducationController {
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public Response<EducationResponse> create(@Validated @RequestBody CreateEducationRequest createEducationRequest){
-    Education education = educationRepository.save(toEducation(createEducationRequest));
+  public Response<EducationResponse> create(
+      @Validated @RequestBody CreateEducationRequest createEducationRequest) {
+    Education education = educationRepository.save(educationHelper.toEducation(createEducationRequest));
     return Response.<EducationResponse>builder()
         .status(true)
-        .data(toResponse(education))
+        .data(educationHelper.toResponse(education))
         .build();
   }
 
@@ -96,12 +100,12 @@ public class EducationController {
       @EducationMustExist(message = "Must Exist", path = "id")
       @PathVariable
       String id
-  ){
+  ) {
     Education education = educationRepository.findById(id).get();
     objectHelper.copyProperties(updateEducationRequest, education);
     return Response.<EducationResponse>builder()
         .status(true)
-        .data(toResponse(educationRepository.save(education)))
+        .data(educationHelper.toResponse(educationRepository.save(education)))
         .build();
   }
 
@@ -113,25 +117,12 @@ public class EducationController {
       @EducationMustExist(message = "Must Exist", path = "id")
       @PathVariable
       String id
-  ){
+  ) {
     educationRepository.deleteById(id);
     return Response.<String>builder()
         .status(true)
         .data("Success Delete Education")
         .build();
-  }
-
-  private EducationResponse toResponse(Education education){
-    EducationResponse educationResponse = EducationResponse.builder().build();
-    BeanUtils.copyProperties(education, educationResponse);
-    return educationResponse;
-  }
-
-  private Education toEducation(CreateEducationRequest createEducationRequest){
-    Education education = Education.builder().build();
-    BeanUtils.copyProperties(createEducationRequest, education);
-    education.setFinalScoreType(FinalScoreType.valueOf(createEducationRequest.getFinalScoreType()));
-    return education;
   }
 
 }
