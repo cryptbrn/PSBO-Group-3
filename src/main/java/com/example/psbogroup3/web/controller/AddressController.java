@@ -84,8 +84,12 @@ public class AddressController {
       @AddressMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
     Address address = addressRepository.findById(id).get();
     objectHelper.copyProperties(updateAddressRequest, address);
-    address.setTimezone(timezoneRepository.save(timezoneHelper.updateTimezone(address.getTimezone(),
-        updateAddressRequest.getUpdateTimezoneRequest())));
+    if(updateAddressRequest.getTimeZoneId()!=null){
+      address.setTimezone(timezoneRepository.findById(updateAddressRequest.getTimeZoneId()).get());
+    } else {
+      address.setTimezone(timezoneRepository.save(timezoneHelper.updateTimezone(address.getTimezone(),
+          updateAddressRequest.getUpdateTimezoneRequest())));
+    }
     return Response.<AddressResponse>builder()
         .status(true)
         .data(toResponse(addressRepository.save(address)))
@@ -112,8 +116,12 @@ public class AddressController {
   private Address toAddress(CreateAddressRequest createAddressRequest) {
     Address address = Address.builder().build();
     BeanUtils.copyProperties(createAddressRequest, address);
-    address.setTimezone(timezoneRepository.save(
-        timezoneHelper.toTimezone(createAddressRequest.getTimezoneRequest())));
+    if(createAddressRequest.getTimeZoneId() != null){
+      address.setTimezone(timezoneRepository.findById(createAddressRequest.getTimeZoneId()).get());
+    } else {
+      address.setTimezone(timezoneRepository.save(
+          timezoneHelper.toTimezone(createAddressRequest.getTimezoneRequest())));
+    }
     return address;
   }
 
