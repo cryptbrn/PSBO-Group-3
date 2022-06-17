@@ -2,6 +2,7 @@ package com.example.psbogroup3.web.model.request;
 
 import com.example.psbogroup3.enums.Level;
 import com.example.psbogroup3.enums.FinalScoreType;
+import com.example.psbogroup3.enums.Status;
 import com.example.psbogroup3.validation.StringEnumeration;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -26,7 +27,8 @@ public class CreateEducationRequest {
   private String institution;
 
   @NotNull
-  private FinalScoreType finalScoreType;
+  @StringEnumeration(message = "Must Final Score Enum", enumClass = FinalScoreType.class)
+  private String finalScoreType;
 
   @NotNull
   private Double finalScore;
