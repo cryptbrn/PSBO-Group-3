@@ -1,6 +1,7 @@
 package com.example.psbogroup3.web.controller;
 
 import com.example.psbogroup3.entity.Education;
+import com.example.psbogroup3.enums.FinalScoreType;
 import com.example.psbogroup3.helper.ObjectHelper;
 import com.example.psbogroup3.repository.EducationRepository;
 import com.example.psbogroup3.validation.EducationMustExist;
@@ -129,6 +130,7 @@ public class EducationController {
   private Education toEducation(CreateEducationRequest createEducationRequest){
     Education education = Education.builder().build();
     BeanUtils.copyProperties(createEducationRequest, education);
+    education.setFinalScoreType(FinalScoreType.valueOf(createEducationRequest.getFinalScoreType()));
     return education;
   }
 

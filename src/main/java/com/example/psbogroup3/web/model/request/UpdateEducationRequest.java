@@ -21,7 +21,8 @@ public class UpdateEducationRequest {
 
   private String institution;
 
-  private FinalScoreType finalScoreType;
+  @StringEnumeration(message = "Must Final Score Enum", enumClass = FinalScoreType.class)
+  private String finalScoreType;
 
   private Double finalScore;
 }
