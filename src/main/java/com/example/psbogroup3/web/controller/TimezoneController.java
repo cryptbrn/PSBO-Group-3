@@ -2,22 +2,20 @@ package com.example.psbogroup3.web.controller;
 
 import com.example.psbogroup3.entity.Timezone;
 import com.example.psbogroup3.helper.ObjectHelper;
+import com.example.psbogroup3.helper.TimezoneHelper;
 import com.example.psbogroup3.repository.TimezoneRepository;
 import com.example.psbogroup3.validation.TimezoneMustExist;
 import com.example.psbogroup3.web.model.request.CreateTimezoneRequest;
 import com.example.psbogroup3.web.model.request.UpdateTimezoneRequest;
-import com.example.psbogroup3.web.model.response.TimezoneResponse;
 import com.example.psbogroup3.web.model.response.Response;
+import com.example.psbogroup3.web.model.response.TimezoneResponse;
 import io.swagger.annotations.Api;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,11 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.sql.Time;
-import java.util.TimeZone;
-import java.util.GregorianCalendar;
-import java.util.Calendar;
 
 /**
  * @author alvinamaharani
@@ -45,6 +38,9 @@ public class TimezoneController {
 
     @Autowired
     ObjectHelper objectHelper;
+
+    @Autowired
+    TimezoneHelper timezoneHelper;
 
     @GetMapping(
             value = "/api/timezone",
@@ -82,15 +78,7 @@ public class TimezoneController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public Response<TimezoneResponse> create(@Validated @RequestBody CreateTimezoneRequest createTimezoneRequest){
-        //Calculate offset
-        String tmp = createTimezoneRequest.getLocation().toString();
-        TimeZone tz = TimeZone.getTimeZone(tmp);
-        Calendar cal = GregorianCalendar.getInstance(tz);
-	    int offsetInMillis = tz.getOffset(cal.getTimeInMillis());
-        String offset = String.format("%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
-        offset = "GMT"+(offsetInMillis >= 0 ? "+" : "-") + offset;
-
-        Timezone timezone = timezoneRepository.save(toTimezone(createTimezoneRequest, offset));
+        Timezone timezone = timezoneRepository.save(toTimezone(createTimezoneRequest));
         System.out.println(timezone);
         return Response.<TimezoneResponse>builder()
                 .status(true)
@@ -113,15 +101,7 @@ public class TimezoneController {
     ){
         Timezone timezone = timezoneRepository.findById(id).get();
         objectHelper.copyProperties(updateTimezoneRequest, timezone);
-        
-        //Calculate offset
-        String tmp = updateTimezoneRequest.getLocation().toString();
-        TimeZone tz = TimeZone.getTimeZone(tmp);
-        Calendar cal = GregorianCalendar.getInstance(tz);
-	    int offsetInMillis = tz.getOffset(cal.getTimeInMillis());
-        String offset = String.format("%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
-        timezone.setOffset(offset);
-        offset = "GMT"+(offsetInMillis >= 0 ? "+" : "-") + offset;
+        timezone.setOffset(timezoneHelper.generateOffset(updateTimezoneRequest.getLocation()));
         return Response.<TimezoneResponse>builder()
                 .status(true)
                 .data(toResponse(timezoneRepository.save(timezone)))
@@ -134,7 +114,6 @@ public class TimezoneController {
     )
     public Response<String> deleteById(
             @TimezoneMustExist(message = "Must Exist", path = "id")
-
             @PathVariable
             String id
     ){
@@ -151,10 +130,10 @@ public class TimezoneController {
         return timezoneResponse;
     }
 
-    private Timezone toTimezone(CreateTimezoneRequest createTimezoneRequest, String offset){
+    private Timezone toTimezone(CreateTimezoneRequest createTimezoneRequest){
         Timezone timezone = Timezone.builder().build();
         BeanUtils.copyProperties(createTimezoneRequest, timezone);
-        timezone.setOffset(offset);
+        timezone.setOffset(timezoneHelper.generateOffset(createTimezoneRequest.getLocation()));
         return timezone;
     }
 
