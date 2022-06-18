@@ -64,7 +64,7 @@ Sistem dapat digunakan oleh siapa saja untuk mendapatkan user dummy yang dapat d
 
 
 ## 4. Use Case Diagram
-![use-case-diagram](https://drive.google.com/uc?export=view&id=123uXji-u0z4sYQFljTxtk8gEfNq-9pBD)
+![use-case-diagram](https://drive.google.com/uc?export=view&id=1qbquw-1CKWLHhPnhGnRPC9DqvXHnpVBW)
 
 ## 5. Fully Developed Use Case Description
 |Use Case Name:|Membuat person|
@@ -99,7 +99,7 @@ Sistem dapat digunakan oleh siapa saja untuk mendapatkan user dummy yang dapat d
 |5|Institusi|Nama, tanggal join|Job|
 
 ## 8. Domain Model Class Diagram
-![domain-class-diagram](https://drive.google.com/uc?export=view&id=1ScPfGdLjB-DXgkSDXd7X6BVvnGxtSfUe)
+![domain-class-diagram](https://drive.google.com/uc?export=view&id=1CKWLHhPnhGnRPC9DqvXHnpVBW)
 
 # C. Desain Berorientasi Objek
 
@@ -111,8 +111,8 @@ Sistem dapat digunakan oleh siapa saja untuk mendapatkan user dummy yang dapat d
 | |Builder (1) To construct object| |
 
 ## 2. Design Class Diagram
-![design-class-diagram-1](https://drive.google.com/uc?export=view&id=1GldPpj3E4r1auoEeoidglJRyfKjF4eK9)
-![design-class-diagram-2](https://drive.google.com/uc?export=view&id=1ieJe3TgjY4unCQiqU9ROI8XWgM-zBzXp)
+![design-class-diagram-1](https://drive.google.com/uc?export=view&id=1govYN37hJRg9LAMzZDiZrhhtYDTZV7NT)
+![design-class-diagram-2](https://drive.google.com/uc?export=view&id=1YT2TWZTU-8DKvTadDveAAZwHWdxu3lP0)
 
 ## 3. Sequence Diagram
 ![sequence-diagram-1](https://drive.google.com/uc?export=view&id=12OxgOD28Lorjns3bUUSxFP617h2Q0kNJ)
