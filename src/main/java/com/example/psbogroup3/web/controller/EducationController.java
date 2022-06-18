@@ -1,6 +1,7 @@
 package com.example.psbogroup3.web.controller;
 
 import com.example.psbogroup3.entity.Education;
+import com.example.psbogroup3.enums.FinalScoreType;
 import com.example.psbogroup3.helper.EducationHelper;
 import com.example.psbogroup3.helper.ObjectHelper;
 import com.example.psbogroup3.repository.EducationRepository;
@@ -81,7 +82,8 @@ public class EducationController {
   )
   public Response<EducationResponse> create(
       @Validated @RequestBody CreateEducationRequest createEducationRequest) {
-    Education education = educationRepository.save(educationHelper.toEducation(createEducationRequest));
+    Education education = educationRepository.save(
+        educationHelper.toEducation(createEducationRequest));
     return Response.<EducationResponse>builder()
         .status(true)
         .data(educationHelper.toResponse(education))
@@ -103,6 +105,10 @@ public class EducationController {
   ) {
     Education education = educationRepository.findById(id).get();
     objectHelper.copyProperties(updateEducationRequest, education);
+    if (updateEducationRequest.getFinalScoreType() != null) {
+      education.setFinalScoreType(
+          FinalScoreType.valueOf(updateEducationRequest.getFinalScoreType()));
+    }
     return Response.<EducationResponse>builder()
         .status(true)
         .data(educationHelper.toResponse(educationRepository.save(education)))

@@ -1,6 +1,8 @@
 package com.example.psbogroup3.web.controller;
 
 import com.example.psbogroup3.entity.Person;
+import com.example.psbogroup3.enums.Gender;
+import com.example.psbogroup3.enums.Status;
 import com.example.psbogroup3.helper.AddressHelper;
 import com.example.psbogroup3.helper.EducationHelper;
 import com.example.psbogroup3.helper.JobHelper;
@@ -38,123 +40,134 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PersonController {
 
-    @Autowired
-    PersonRepository personRepository;
+  @Autowired
+  PersonRepository personRepository;
 
-    @Autowired
-    AddressRepository addressRepository;
+  @Autowired
+  AddressRepository addressRepository;
 
-    @Autowired
-    EducationRepository educationRepository;
+  @Autowired
+  EducationRepository educationRepository;
 
-    @Autowired
-    JobRepository jobRepository;
+  @Autowired
+  JobRepository jobRepository;
 
-    @Autowired
-    AddressHelper addressHelper;
+  @Autowired
+  AddressHelper addressHelper;
 
-    @Autowired
-    EducationHelper educationHelper;
+  @Autowired
+  EducationHelper educationHelper;
 
-    @Autowired
-    JobHelper jobHelper;
+  @Autowired
+  JobHelper jobHelper;
 
-    @Autowired
-    ObjectHelper objectHelper;
+  @Autowired
+  ObjectHelper objectHelper;
 
-    @GetMapping(value = "/api/persons", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<List<PersonResponse>> findAll() {
-        List<Person> personList = personRepository.findAll();
-        List<PersonResponse> personResponseList = personList.stream().map(this::toResponse).collect(
-                Collectors.toList());
-        return Response.<List<PersonResponse>>builder()
-                .status(true)
-                .data(personResponseList)
-                .build();
+  @GetMapping(value = "/api/persons", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Response<List<PersonResponse>> findAll() {
+    List<Person> personList = personRepository.findAll();
+    List<PersonResponse> personResponseList = personList.stream().map(this::toResponse).collect(
+        Collectors.toList());
+    return Response.<List<PersonResponse>>builder()
+        .status(true)
+        .data(personResponseList)
+        .build();
 
+  }
+
+  @GetMapping(value = "/api/persons/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Response<PersonResponse> findById(
+      @PersonMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
+    Person person = personRepository.findById(id).get();
+    return Response.<PersonResponse>builder()
+        .status(true)
+        .data(toResponse(person))
+        .build();
+  }
+
+  @PostMapping(value = "/api/persons", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public Response<PersonResponse> create(
+      @Validated @RequestBody CreatePersonRequest createPersonRequest) {
+    Person person = personRepository.save(toPerson(createPersonRequest));
+    return Response.<PersonResponse>builder()
+        .status(true)
+        .data(toResponse(person))
+        .build();
+  }
+
+  @PutMapping(value = "/api/persons/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public Response<PersonResponse> updateById(
+      @Validated @RequestBody UpdatePersonRequest updatePersonRequest,
+      @PersonMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
+    Person person = personRepository.findById(id).get();
+    objectHelper.copyProperties(updatePersonRequest, person);
+    if (updatePersonRequest.getGender() != null) {
+      person.setGender(Gender.valueOf(updatePersonRequest.getGender()));
     }
-
-    @GetMapping(value = "/api/persons/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<PersonResponse> findById(
-            @PersonMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
-        Person person = personRepository.findById(id).get();
-        return Response.<PersonResponse>builder()
-                .status(true)
-                .data(toResponse(person))
-                .build();
+    if (updatePersonRequest.getStatus() != null) {
+      person.setStatus(Status.valueOf(updatePersonRequest.getStatus()));
     }
+    return Response.<PersonResponse>builder()
+        .status(true)
+        .data(toResponse(personRepository.save(person)))
+        .build();
+  }
 
-    @PostMapping(value = "/api/persons", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<PersonResponse> create(@Validated @RequestBody CreatePersonRequest createPersonRequest) {
-        Person person = personRepository.save(toPerson(createPersonRequest));
-        return Response.<PersonResponse>builder()
-                .status(true)
-                .data(toResponse(person))
-                .build();
-    }
+  @DeleteMapping(value = "/api/persons/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Response<String> deleteById(
+      @PersonMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
+    personRepository.deleteById(id);
+    return Response.<String>builder()
+        .status(true)
+        .data("Success Delete Person")
+        .build();
+  }
 
-    @PutMapping(value = "/api/persons/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<PersonResponse> updateById(
-            @Validated @RequestBody UpdatePersonRequest updatePersonRequest,
-            @PersonMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
-        Person person = personRepository.findById(id).get();
-        objectHelper.copyProperties(updatePersonRequest, person);
-        return Response.<PersonResponse>builder()
-                .status(true)
-                .data(toResponse(personRepository.save(person)))
-                .build();
-    }
+  private PersonResponse toResponse(Person person) {
+    PersonResponse personResponse = PersonResponse.builder().build();
+    BeanUtils.copyProperties(person, personResponse);
+    personResponse.setAddress(addressHelper.toResponse(person.getAddress()));
+    personResponse.setEducation(educationHelper.toResponse(person.getEducation()));
+    personResponse.setJob(jobHelper.toResponse(person.getJob()));
+    return personResponse;
+  }
 
-    @DeleteMapping(value = "/api/persons/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<String> deleteById(
-            @PersonMustExist(message = "Must Exist", path = "id") @PathVariable String id) {
-        personRepository.deleteById(id);
-        return Response.<String>builder()
-                .status(true)
-                .data("Success Delete Person")
-                .build();
-    }
+  private Person toPerson(CreatePersonRequest createPersonRequest) {
+    Person person = Person.builder().build();
+    BeanUtils.copyProperties(createPersonRequest, person);
+    person.setGender(Gender.valueOf(createPersonRequest.getGender()));
+    person.setStatus(Status.valueOf(createPersonRequest.getStatus()));
+    setAddress(person, createPersonRequest);
+    setEducation(person, createPersonRequest);
+    setJob(person, createPersonRequest);
+    return person;
+  }
 
-    private PersonResponse toResponse(Person person) {
-        PersonResponse personResponse = PersonResponse.builder().build();
-        BeanUtils.copyProperties(person, personResponse);
-        personResponse.setAddress(addressHelper.toResponse(person.getAddress()));
-        personResponse.setEducation(educationHelper.toResponse(person.getEducation()));
-        personResponse.setJob(jobHelper.toResponse(person.getJob()));
-        return personResponse;
+  private void setAddress(Person person, CreatePersonRequest createPersonRequest) {
+    if (createPersonRequest.getAddressId() != null) {
+      person.setAddress(addressRepository.findById(createPersonRequest.getAddressId()).get());
+    } else {
+      person.setAddress(
+          addressRepository.save(addressHelper.toAddress(createPersonRequest.getAddress())));
     }
+  }
 
-    private Person toPerson(CreatePersonRequest createPersonRequest) {
-        Person person = Person.builder().build();
-        BeanUtils.copyProperties(createPersonRequest, person);
-        setAddress(person, createPersonRequest);
-        setEducation(person, createPersonRequest);
-        setJob(person, createPersonRequest);
-        return person;
+  private void setEducation(Person person, CreatePersonRequest createPersonRequest) {
+    if (createPersonRequest.getEducationId() != null) {
+      person.setEducation(educationRepository.findById(createPersonRequest.getEducationId()).get());
+    } else {
+      person.setEducation(educationRepository.save(
+          educationHelper.toEducation(createPersonRequest.getEducation())));
     }
+  }
 
-    private void setAddress(Person person, CreatePersonRequest createPersonRequest){
-        if(createPersonRequest.getAddressId() != null){
-            person.setAddress(addressRepository.findById(createPersonRequest.getAddressId()).get());
-        }else {
-            addressHelper.toAddress(createPersonRequest.getAddress());
-        }
+  private void setJob(Person person, CreatePersonRequest createPersonRequest) {
+    if (createPersonRequest.getJobId() != null) {
+      person.setJob(jobRepository.findById(createPersonRequest.getJobId()).get());
+    } else {
+      person.setJob(jobRepository.save(jobHelper.toJob(createPersonRequest.getJob())));
     }
-
-    private void setEducation(Person person, CreatePersonRequest createPersonRequest){
-        if(createPersonRequest.getEducationId() != null){
-            person.setEducation(educationRepository.findById(createPersonRequest.getEducationId()).get());
-        }else {
-            educationHelper.toEducation(createPersonRequest.getEducation());
-        }
-    }
-
-    private void setJob(Person person, CreatePersonRequest createPersonRequest){
-        if(createPersonRequest.getJobId() != null){
-            person.setJob(jobRepository.findById(createPersonRequest.getJobId()).get());
-        }else {
-            jobHelper.toJob(createPersonRequest.getJob());
-        }
-    }
+  }
 
 }
