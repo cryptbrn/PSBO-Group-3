@@ -139,7 +139,7 @@ public class PersonController {
         if(createPersonRequest.getAddressId() != null){
             person.setAddress(addressRepository.findById(createPersonRequest.getAddressId()).get());
         }else {
-            person.setAddress(addressHelper.toAddress(createPersonRequest.getAddress()));
+            person.setAddress(addressRepository.save(addressHelper.toAddress(createPersonRequest.getAddress())));
         }
     }
 
@@ -147,7 +147,7 @@ public class PersonController {
         if(createPersonRequest.getEducationId() != null){
             person.setEducation(educationRepository.findById(createPersonRequest.getEducationId()).get());
         }else {
-            person.setEducation(educationHelper.toEducation(createPersonRequest.getEducation()));
+            person.setEducation(educationRepository.save(educationHelper.toEducation(createPersonRequest.getEducation())));
         }
     }
 
@@ -155,7 +155,7 @@ public class PersonController {
         if(createPersonRequest.getJobId() != null){
             person.setJob(jobRepository.findById(createPersonRequest.getJobId()).get());
         }else {
-            person.setJob(jobHelper.toJob(createPersonRequest.getJob()));
+            person.setJob(jobRepository.save(jobHelper.toJob(createPersonRequest.getJob())));
         }
     }
 
