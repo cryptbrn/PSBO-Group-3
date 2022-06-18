@@ -1,6 +1,7 @@
 package com.example.psbogroup3.web.controller;
 
 import com.example.psbogroup3.entity.Person;
+import com.example.psbogroup3.enums.Status;
 import com.example.psbogroup3.helper.AddressHelper;
 import com.example.psbogroup3.helper.EducationHelper;
 import com.example.psbogroup3.helper.JobHelper;
@@ -127,6 +128,7 @@ public class PersonController {
     private Person toPerson(CreatePersonRequest createPersonRequest) {
         Person person = Person.builder().build();
         BeanUtils.copyProperties(createPersonRequest, person);
+        person.setStatus(Status.valueOf(createPersonRequest.getStatus()));
         setAddress(person, createPersonRequest);
         setEducation(person, createPersonRequest);
         setJob(person, createPersonRequest);
@@ -137,7 +139,7 @@ public class PersonController {
         if(createPersonRequest.getAddressId() != null){
             person.setAddress(addressRepository.findById(createPersonRequest.getAddressId()).get());
         }else {
-            addressHelper.toAddress(createPersonRequest.getAddress());
+            person.setAddress(addressHelper.toAddress(createPersonRequest.getAddress()));
         }
     }
 
@@ -145,7 +147,7 @@ public class PersonController {
         if(createPersonRequest.getEducationId() != null){
             person.setEducation(educationRepository.findById(createPersonRequest.getEducationId()).get());
         }else {
-            educationHelper.toEducation(createPersonRequest.getEducation());
+            person.setEducation(educationHelper.toEducation(createPersonRequest.getEducation()));
         }
     }
 
@@ -153,7 +155,7 @@ public class PersonController {
         if(createPersonRequest.getJobId() != null){
             person.setJob(jobRepository.findById(createPersonRequest.getJobId()).get());
         }else {
-            jobHelper.toJob(createPersonRequest.getJob());
+            person.setJob(jobHelper.toJob(createPersonRequest.getJob()));
         }
     }
 

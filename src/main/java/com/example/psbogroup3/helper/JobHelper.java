@@ -11,6 +11,6 @@ public interface JobHelper {
 
   Job toJob(CreateJobRequest createJobRequest);
 
-  JobResponse toResponse(Job timezone);
+  JobResponse toResponse(Job job);
 
 }
